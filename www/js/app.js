@@ -12,23 +12,20 @@ angular.module('starter', ['ionic'])
       // for form inputs)
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
 
-      ble.isEnabled(
-        function(){
-          // Bluetooth is enabled
-        },
-        function(){
-          // Bluetooth not yet enabled so we try to enable it
-          ble.enable(
-            function(){
-              // bluetooth now enabled
-            },
-            function(err){
-              alert('Cannot enable bluetooth');
-            }
-          );
-        }
-      );
+      var initParams = {
+        "request": true,
+        "statusReceiver": false,
+        "restoreKey" : "bluetoothleattendance"
+      };
 
+      bluetoothle.initialize(
+        function (result) {
+          console.log('Bluetooth status = ' + result.status);
+          if (result.status === 'disabled') {
+            alert('Bluetooth must be enabled.');
+          }
+        },
+        initParams);
 
       // Don't remove this line unless you know what you are doing. It stops the viewport
       // from snapping when text inputs are focused. Ionic handles this internally for

@@ -2,12 +2,13 @@ var bleno = require('bleno');
 
 var attendees = [];
 var settings = {
-  service_id: '24ui',
-  characteristic_id: '70xz'
+  service_id: '12AB',
+  characteristic_id: '34CD'
 };
 
 bleno.on('stateChange', function(state){
   if(state === 'poweredOn'){
+    console.log('Device is on, advertising...');
     bleno.startAdvertising('AttendanceApp', [settings.service_id]);
   }else{
     bleno.stopAdvertising();
@@ -17,6 +18,7 @@ bleno.on('stateChange', function(state){
 bleno.on('advertisingStart', function(error){
     if(error){
       // error on advertise start
+      console.log('Failed to start advertising');
     }else{
       console.log('started..');
       bleno.setServices([
