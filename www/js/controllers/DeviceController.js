@@ -62,7 +62,7 @@
           }
         },
         function(err){
-          console.error(err);
+          console.error(JSON.stringify(err));
           alert("Error occured while trying to record your attendance. Please try again.");
         },
         writeParams

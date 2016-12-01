@@ -4,9 +4,14 @@
 
   function DeviceFactory(){
     var devices = [];
+    var deviceIds = {};
     return {
       addDevice: function(device){
+        if (deviceIds[device.id]) {
+          return;
+        }
         devices.push(device);
+        deviceIds[device.id] = true;
       },
 
       getDevices: function(){
@@ -22,6 +27,7 @@
 
       reset: function(){
         devices = [];
+        deviceIds = {};
       }
 
     };

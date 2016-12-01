@@ -10,19 +10,27 @@
       console.log('Scanning for devices.');
       DeviceFactory.reset();
 
-      var scanParams = {"services": []};
+      var scanParams = {
+        "services": []
+      };
 
       bluetoothle.startScan(
         function(status){
-          if (status.status === 'scanStarted') {
-            console.log('Scan has started successfully.');
-          } else if (status.status === 'scanResult') {
-            var device = status;
-            console.log(device);
+          switch (status.status) {
+            case 'scanStarted':
+              console.log('Scan has started successfully.');
+              break;
+            case 'scanResult':
+              var device = status;
 
-            var name = device.name ? device.name : 'Unknown';
+              console.log('Found device: ' + JSON.stringify(device));
 
-            DeviceFactory.addDevice({ 'id': device.address, 'name': name });
+              if (device.name) {
+                DeviceFactory.addDevice({ 'id': device.address, 'name': device.name });
+              }
+              break;
+            default:
+              console.error('Unknown status object returned: ' + JSON.stringify(status));
           }
         },
         function(err){
@@ -48,41 +56,20 @@
 
     }
 
-    var getCharacteristics = function (device_id, service_id) {
-      var params = {"address": device_id, "service": service_id};
-
-      console.log('Getting characteristics for service ' + service_id + ' on device ' + device_id);
-
-      bluetoothle.characteristics(
-            function (result) {
-              console.log(result);
-            },
-            function (error) {
-              alert('Could not retrieve characteristics from the device/service.');
-            },
-            params);
-    }
-
     $scope.connect = function(device_id){
       bluetoothle.connect(
         function(res){
           console.log('Connected to device ' + device_id + ' successfully.');
           console.log(res);
 
-          bluetoothle.services(
+          bluetoothle.discover(
             function (result) {
-              console.log(result);
-              if (result.services && result.services.length > 0) {
-                for (i = 0; i < result.services.length; i++) {
-                  getCharacteristics(device_id, result.services[i]);
-                }
-              }
+              console.debug(JSON.stringify(result));
             },
-            function (result) {
-              console.log(result);
-              alert('Could not retrieve services from the device.');
+            function (error) {
+              console.error(JSON.stringify(error));
             },
-            {"address": device_id});
+            {"address": device_id, "clearCache": true});
 
           $state.go('device', { 'id': device_id });
         },
